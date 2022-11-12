@@ -110,23 +110,29 @@ while [[ ${1:0:1} = '-' ]] ; do # While the first parameter starts with a dash
 done
 
 # Doing things
-if [[ ${UPDATE} -eq 0 && ${RUN} -eq 0 ]] ; then
-	usage
+if which wget &> /dev/null && which tar &> /dev/null; then
+
+	if [[ ${UPDATE} -eq 0 && ${RUN} -eq 0 ]] ; then
+		usage
+		exit 1
+	fi
+	
+	if [[ ! -x ${BARO_DIR}/Barotrauma ]] ; then
+		echo "Regular Barotrauma not found."
+		echo "(${BARO_DIR}/Barotrauma does not exist or is not executable)"
+		usage
+		exit 1
+	fi
+	
+	echo "Barotrauma dir is ${BARO_DIR}"
+	echo "It will be used to copy contents and user settings to Lua dir."
+	echo "Lua dir is ${LUA_DIR}"
+	trap cleanup SIGINT
+	mkdir -p ${LUA_DIR}
+	cd ${LUA_DIR}
+	if [[ $UPDATE -ne 0 ]] ; then update; fi
+	if [[ $RUN -ne 0 ]] ; then run; fi
+else
+	echo "Requires wget and tar."
 	exit 1
 fi
-
-if [[ ! -x ${BARO_DIR}/Barotrauma ]] ; then
-	echo "Regular Barotrauma not found."
-	echo "(${BARO_DIR}/Barotrauma does not exist or is not executable)"
-	usage
-	exit 1
-fi
-
-echo "Barotrauma dir is ${BARO_DIR}"
-echo "It will be used to copy contents and user settings to Lua dir."
-echo "Lua dir is ${LUA_DIR}"
-trap cleanup SIGINT
-mkdir -p ${LUA_DIR}
-cd ${LUA_DIR}
-if [[ $UPDATE -ne 0 ]] ; then update; fi
-if [[ $RUN -ne 0 ]] ; then run; fi
