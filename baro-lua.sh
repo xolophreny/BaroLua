@@ -33,6 +33,7 @@ update() {
 run() {
 	echo "Running..."
 	if [[ ${VARS} -ne 0 ]] ; then # Additional variables from -e
+		echo "...with variables..."
 		export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
 		export DRI_PRIME=1
 		export MESA_GLTHREAD=1
@@ -75,7 +76,8 @@ LINKING=0
 # Processing parameters
 while [[ ${1:0:1} = '-' ]] ; do # While the first parameter starts with a dash
 	N=1 # Character counter
-	while [[ $N -lt ${#1} ]] ; do # Going through every character in a parameter
+	L=${#1} # Length of parameter
+	while [[ $N -lt $L ]] ; do # Going through every character in a parameter
 		case ${1:$N:1} in # Case of Nth character
 			'u') 
 				UPDATE=1;;
@@ -83,7 +85,7 @@ while [[ ${1:0:1} = '-' ]] ; do # While the first parameter starts with a dash
 				RUN=1;;
 			'd')
 				# If not last character in a blob, or if no subsequent parameter
-				if [[ $N -ne $((${#1}-1)) || ! -n ${2} ]] ; then
+				if [[ $N -ne $(($L-1)) || ! -n ${2} ]] ; then
 					usage
 					exit 1
 				fi
@@ -111,7 +113,6 @@ done
 
 # Doing things
 if which wget &> /dev/null && which tar &> /dev/null; then
-
 	if [[ ${UPDATE} -eq 0 && ${RUN} -eq 0 ]] ; then
 		usage
 		exit 1
@@ -120,7 +121,6 @@ if which wget &> /dev/null && which tar &> /dev/null; then
 	if [[ ! -x ${BARO_DIR}/Barotrauma ]] ; then
 		echo "Regular Barotrauma not found."
 		echo "(${BARO_DIR}/Barotrauma does not exist or is not executable)"
-		usage
 		exit 1
 	fi
 	
