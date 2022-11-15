@@ -6,15 +6,15 @@ update() {
 	tar xf baro.tar.gz
 	echo "Copying Content, Data..."
 	for item in Content Data; do
-		cp -r ${BARO_DIR}/${item} ./
+		cp -r ${baro_dir}/${item} ./
 	done
 	echo "LocalMods, ModLists, config_player.xml, serversettings.xml..."
-	if [[ ${LINKING} -ne 0 ]] ; then
+	if [[ ${linking} -ne 0 ]] ; then
 		# Link configs and local mods for consistency between Vanilla and Lua
 		for item in LocalMods ModLists config_player.xml serversettings.xml; do
 			if [[ ! -L ${item} ]] ; then 
 				rm -r ${item}
-				ln -s ${BARO_DIR}/${item} ./
+				ln -s ${baro_dir}/${item} ./
 			fi
 		done
 	else
@@ -23,7 +23,7 @@ update() {
 			if [[ -L ${item} ]] ; then
 				rm ${item}
 			fi
-			cp -r ${BARO_DIR}/${item} ./
+			cp -r ${baro_dir}/${item} ./
 		done
 	fi
 	cleanup
@@ -32,7 +32,7 @@ update() {
 
 run() {
 	echo "Running..."
-	if [[ ${VARS} -ne 0 ]] ; then # Additional variables from -e
+	if [[ ${vars} -ne 0 ]] ; then # Additional variables from -e
 		echo "...with variables..."
 		export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
 		export DRI_PRIME=1
@@ -66,72 +66,72 @@ usage() {
 }
 
 
-BARO_DIR=~/.local/share/Steam/steamapps/common/Barotrauma
-LUA_DIR=~/.local/share/barotrauma-lua
-UPDATE=0
-RUN=0
-VARS=0
-LINKING=0
+baro_dir=~/.local/share/Steam/steamapps/common/Barotrauma
+lua_dir=~/.local/share/barotrauma-lua
+update=0
+run=0
+vars=0
+linking=0
 
 # Processing parameters
 while [[ ${1:0:1} = '-' ]] ; do # While the first parameter starts with a dash
-	N=1 # Character counter
-	L=${#1} # Length of parameter
-	while [[ $N -lt $L ]] ; do # Going through every character in a parameter
-		case ${1:$N:1} in # Case of Nth character
+	n=1 # Character counter
+	l=${#1} # Length of parameter
+	while [[ $n -lt $l ]] ; do # Going through every character in a parameter
+		case ${1:$n:1} in # Case of Nth character
 			'u') 
-				UPDATE=1;;
+				update=1;;
 			'r')
-				RUN=1;;
+				run=1;;
 			'd')
 				# If not last character in a blob, or if no subsequent parameter
-				if [[ $N -ne $(($L-1)) || ! -n ${2} ]] ; then
+				if [[ $n -ne $(($l-1)) || ! -n ${2} ]] ; then
 					usage
 					exit 1
 				fi
-				BARO_DIR=${2}
+				baro_dir=${2}
 				shift;; # Shift through the subsequent parameter
 			'l')
-				if [[ $N -ne $((${#1}-1)) || ! -n ${2} ]] ; then
+				if [[ $n -ne $(($l-1)) || ! -n ${2} ]] ; then
 					usage
 					exit 1
 				fi
-				LUA_DIR=${2}
+				lua_dir=${2}
 				shift;;
 			'e')
-				VARS=1;;
+				vars=1;;
 			's')
-				LINKING=1;;
+				linking=1;;
 			*)
 				usage
 				exit 1;;
 		esac
-		N=$(($N+1))
+		n=$(($n+1))
 	done
 	shift
 done
 
 # Doing things
 if which wget &> /dev/null && which tar &> /dev/null; then
-	if [[ ${UPDATE} -eq 0 && ${RUN} -eq 0 ]] ; then
+	if [[ ${update} -eq 0 && ${run} -eq 0 ]] ; then
 		usage
 		exit 1
 	fi
 	
-	if [[ ! -x ${BARO_DIR}/Barotrauma ]] ; then
+	if [[ ! -x ${baro_dir}/Barotrauma ]] ; then
 		echo "Regular Barotrauma not found."
-		echo "(${BARO_DIR}/Barotrauma does not exist or is not executable)"
+		echo "(${baro_dir}/Barotrauma does not exist or is not executable)"
 		exit 1
 	fi
 	
-	echo "Barotrauma dir is ${BARO_DIR}"
+	echo "Barotrauma dir is ${baro_dir}"
 	echo "It will be used to copy contents and user settings to Lua dir."
-	echo "Lua dir is ${LUA_DIR}"
+	echo "Lua dir is ${lua_dir}"
 	trap cleanup SIGINT
-	mkdir -p ${LUA_DIR}
-	cd ${LUA_DIR}
-	if [[ $UPDATE -ne 0 ]] ; then update; fi
-	if [[ $RUN -ne 0 ]] ; then run; fi
+	mkdir -p ${lua_dir}
+	cd ${lua_dir}
+	if [[ $update -ne 0 ]] ; then update; fi
+	if [[ $run -ne 0 ]] ; then run; fi
 else
 	echo "Requires wget and tar."
 	exit 1
