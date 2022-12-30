@@ -34,6 +34,10 @@ run() {
 	if [ "$vars" != "" ] ; then
 		echo "Variables: $vars"
 	fi
+	if [ ! -x ./Barotrauma ] ; then
+		echo "Make sure to install Barotrauma Lua with -u first."
+		exit 1
+	fi
 	echo "Running..."
 	exec env $vars ./Barotrauma
 }
@@ -46,8 +50,8 @@ cleanup() {
 usage() {
 	echo "Usage:	$(basename $0) {-u|-r} [-s] [-d <dir>] [-l <dir>] [-e <envvar>]"
 	echo "Options:"
-	echo "	-u		Update to the latest Lua release"
-	echo "	-r		Run Barotrauma Lua"
+	echo "	-u		Update to the latest Lua release."
+	echo "	-r		Run Barotrauma Lua."
 	echo
 	echo "	-d		Set vanilla Barotrauma directory. Default:"
 	echo "			~/.local/share/Steam/steamapps/common/Barotrauma"
@@ -58,8 +62,8 @@ usage() {
 	echo "	-e		Set additional env variables for running Barotrauma. Example:"
 	echo "			-e DRI_PRIME=1 -e MESA_GLTHREAD=1"
 	echo
-	echo "	-s		Make symbolic links to vanilla configs instead of copying"
-	echo "			Useful for consistency between Vanilla and Lua"
+	echo "	-s		Make symbolic links to vanilla configs instead of copying."
+	echo "			Useful for consistency between Vanilla and Lua."
 }
 
 
