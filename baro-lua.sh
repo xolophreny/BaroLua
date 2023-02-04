@@ -6,14 +6,12 @@ update() {
 	echo "Updating..."
 	wget -O baro.tar.gz https://github.com/evilfactory/LuaCsForBarotrauma/releases/download/latest/luacsforbarotrauma_build_linux.tar.gz
 	tar xf baro.tar.gz
-	echo "Copying Content, Data..."
-	for item in Content Data; do
-		cp -r "${baro_dir}/${item}" ./
-	done
-	echo "LocalMods, ModLists, config_player.xml, serversettings.xml..."
+	echo "Copying Content..."
+	cp -r "${baro_dir}/Content" ./
+	echo "Data, LocalMods, ModLists, config_player.xml, serversettings.xml..."
 	if [ ${linking} -ne 0 ] ; then
 		# Link configs and local mods for consistency between Vanilla and Lua
-		for item in LocalMods ModLists config_player.xml serversettings.xml; do
+		for item in Data LocalMods ModLists config_player.xml serversettings.xml; do
 			if [ ! -L ${item} ] ; then 
 				rm -r ${item}
 				ln -s "${baro_dir}/${item}" ./
@@ -21,7 +19,7 @@ update() {
 		done
 	else
 		# Or just copy them
-		for item in LocalMods ModLists config_player.xml serversettings.xml; do
+		for item in Data LocalMods ModLists config_player.xml serversettings.xml; do
 			if [ -L ${item} ] ; then
 				rm ${item}
 			fi
