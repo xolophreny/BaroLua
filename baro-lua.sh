@@ -1,4 +1,6 @@
 #!/bin/bash
+trap cleanup SIGINT ERR
+set -e
 
 update() {
 	echo "Updating..."
@@ -6,7 +8,7 @@ update() {
 	tar xf baro.tar.gz
 	echo "Copying Content, Data..."
 	for item in Content Data; do
-		cp -r ${baro_dir}/${item} ./
+		cp -r "${baro_dir}/${item}" ./
 	done
 	echo "LocalMods, ModLists, config_player.xml, serversettings.xml..."
 	if [ ${linking} -ne 0 ] ; then
@@ -14,7 +16,7 @@ update() {
 		for item in LocalMods ModLists config_player.xml serversettings.xml; do
 			if [ ! -L ${item} ] ; then 
 				rm -r ${item}
-				ln -s ${baro_dir}/${item} ./
+				ln -s "${baro_dir}/${item}" ./
 			fi
 		done
 	else
@@ -23,7 +25,7 @@ update() {
 			if [ -L ${item} ] ; then
 				rm ${item}
 			fi
-			cp -r ${baro_dir}/${item} ./
+			cp -r "${baro_dir}/${item}" ./
 		done
 	fi
 	cleanup
@@ -44,7 +46,7 @@ run() {
 
 cleanup() {
 	echo "Cleanup..."
-	[ -e baro.tar.gz ] && rm baro.tar.gz
+	[ -e "${lua_dir}/baro.tar.gz" ] && rm "${lua_dir}/baro.tar.gz"
 }
 
 usage() {
@@ -133,13 +135,12 @@ if which wget &> /dev/null && which tar &> /dev/null && which env &> /dev/null; 
 	echo "Barotrauma dir is ${baro_dir}"
 	echo "It will be used to copy contents and user settings to Lua dir."
 	echo "Lua dir is ${lua_dir}"
-	mkdir -p ${lua_dir}
+	mkdir -p "${lua_dir}"
 	if [ ! -e "${lua_dir}" ] ; then
 		echo "Could not find or create ${lua_dir}"
 		exit 1
 	fi
-	cd ${lua_dir}
-	trap cleanup SIGINT
+	cd "${lua_dir}"
 	if [ $update -ne 0 ] ; then update; fi
 	if [ $run -ne 0 ] ; then run; fi
 else
