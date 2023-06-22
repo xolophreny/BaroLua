@@ -4,7 +4,7 @@ set -e
 
 update() {
 	echo "Updating..."
-	wget -O baro.tar.gz https://github.com/evilfactory/LuaCsForBarotrauma/releases/download/latest/luacsforbarotrauma_build_linux.tar.gz
+	wget -O baro.tar.gz https://github.com/evilfactory/LuaCsForBarotrauma/releases/download/latest/luacsforbarotrauma_build_linux_client.tar.gz
 	tar xf baro.tar.gz
 	echo "Copying Content..."
 	cp -r "${baro_dir}/Content" ./
